@@ -1,0 +1,27 @@
+<div class="post">
+  <h1 class="post-title">$title$</h1>
+  <span class="post-date">$date$,
+      $if(author)$
+         Posted by $author$
+      $endif$
+  </span>
+     $body$
+</div>
+
+$if(related_posts)$
+<div class="related">
+  <h2>Related posts</h2>
+  <ul class="related-posts">
+      $for(related_posts)$
+      <li>
+        <h3>
+          <a href="$baseurl$$url$">
+            $title$
+            <small>$date$</small>
+          </a>
+        </h3>
+      </li>
+    $endfor$
+  </ul>
+</div>
+$endif$
