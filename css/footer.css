@@ -1,0 +1,12 @@
+footer {
+    color: #555;
+    font-size: 12px;
+    margin-top: 30px;
+    padding: 12px 30px 12px 0px;
+    text-align: right;
+}
+
+footer a {
+  color: #333399;
+  text-decoration: none;
+}
