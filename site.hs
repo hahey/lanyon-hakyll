@@ -76,6 +76,7 @@ siteCtx =
     constField "baseurl" "" 'mappend'
     constField "site_description" "Lanyon Theme on Hakyll" 'mappend'
     constField "tagline" "A Fork of Lanyon based on Poole" 'mappend'
+    constField "site-title" "lanyon-hakyll"
     defaultContext
 
 pageList :: List
