@@ -1,0 +1,37 @@
+<div class="posts">
+  $for(posts)$
+  <div class="post">
+    <h1 class="post-title">
+      <a href="$url$">
+        $title$
+      </a>
+    </h1>
+    <span class="post-date">$date$,
+      $if(author)$
+         Posted by $author$
+      $endif$
+    </span>
+
+        <style>
+            .head, .footer{
+                display:none !important;
+            }
+            display:none
+        </style>
+        $post-body$
+  </div>
+  $endfor$
+</div>
+
+<div class="pagination">
+  $if(previousPageNum)$
+      <a class="pagination-item newer" href="$previousPageUrl$">Newer</a>
+  $else$
+    <span class="pagination-item newer">Newer</span>
+  $endif$
+  $if(nextPageNum)$
+    <a class="pagination-item older" href="$nextPageUrl$">Older</a>
+  $else$
+    <span class="pagination-item older">Older</span>
+  $endif$
+</div>

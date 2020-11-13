@@ -7,20 +7,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
 
   <title>
-    $if(title=="Home")$
+    $if(home)$
       $site-title$ &middot; $tagline$
     $else$
       $title$ &middot; $site-title$
     $endif$
   </title>
 
-  $if(url&&baseurl)$
+  $if(url)$
+      $if(baseurl)$
   <link rel="canonical" href="$url$">
-  {% endif %}
+      $endif$
+  $endif$
 
   <link rel="stylesheet" href="/css/poole.css">
-  <link rel="stylesheet" href="/syntax.css">
-  <link rel="stylesheet" href="/lanyon.css">
+  <link rel="stylesheet" href="/css/syntax.css">
+  <link rel="stylesheet" href="/css/lanyon.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
 
   <!---
