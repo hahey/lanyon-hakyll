@@ -21,6 +21,13 @@ main = hakyll $ do
         route   idRoute
         compile copyFileCompiler
 
+    match "error/*" $ do
+        route $ setExtension "html"
+        compile $ pandocCompiler
+            >>= applyAsTemplate siteCtx
+            >>= loadAndApplyTemplate "templates/default.html" (baseSidebarCtx <> siteCtx)
+            >>= relativizeUrls
+
     match "pages/*" $ do
         route $ setExtension "html"
         compile $ do
@@ -120,6 +127,7 @@ siteCtx :: Context String
 siteCtx =
     constField "baseurl" "" `mappend`
     constField "site_description" "Lanyon Theme on Hakyll" `mappend`
+    constField "site-url" "https://github.com/hahey/lanyon-hakyll" `mappend`
     constField "tagline" "A Fork of Lanyon based on Poole" `mappend`
     constField "site-title" "lanyon-hakyll" `mappend`
     constField "copy-year" "2020" `mappend`
