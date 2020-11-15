@@ -9,17 +9,13 @@ import           System.FilePath               (takeBaseName)
 --------------------------------------------------------------------------------
 main :: IO ()
 main = hakyll $ do
-    match "images/*" $ do
+    match ("images/*" .||. "js/*") $ do
         route   idRoute
         compile copyFileCompiler
 
     match "css/*" $ do
         route   idRoute
         compile compressCssCompiler
-
-    match "js/*" $ do
-        route   idRoute
-        compile copyFileCompiler
 
     match "error/*" $ do
         route $ setExtension "html"
