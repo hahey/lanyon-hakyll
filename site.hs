@@ -26,13 +26,14 @@ main = hakyll $ do
         route $ setExtension "html"
         compile $ do
             pageName <- takeBaseName . toFilePath <$> getUnderlying
-            let pageCtx = constField pageName "" `mappend`
-                          siteCtx
+            let pageCtx = metadataField `mappend`
+                          constField pageName "" `mappend`
+                          constField "page-name" pageName `mappend`
+                          baseNodeCtx
 
             pandocCompiler
-                >>= applyAsTemplate pageCtx
-                >>= loadAndApplyTemplate "templates/page.html"    pageCtx
-                >>= loadAndApplyTemplate "templates/default.html" pageCtx
+                >>= loadAndApplyTemplate "templates/page.html"    siteCtx
+                >>= loadAndApplyTemplate "templates/default.html" ((sidebarCtx pageCtx) <> siteCtx)
                 >>= relativizeUrls
 
     match "posts/*" $ do
@@ -75,7 +76,7 @@ main = hakyll $ do
             makeItem ""
                 >>= applyAsTemplate indexCtx
                 >>= loadAndApplyTemplate "templates/index.html" indexCtx
-                >>= loadAndApplyTemplate "templates/default.html" indexCtx
+                >>= loadAndApplyTemplate "templates/default.html" (evalCtx <>indexCtx)
                 >>= relativizeUrls
 
     match "templates/*" $ compile templateBodyCompiler
@@ -123,7 +124,7 @@ siteCtx =
     constField "site-title" "lanyon-hakyll" `mappend`
     constField "copy-year" "2020" `mappend`
     constField "github-repo" "https://github.com/hahey/lanyon-hakyll" `mappend`
-    sidebarCtx `mappend`
+    sidebarCtx baseNodeCtx `mappend`
     defaultContext
 
 --------------------------------------------------------------------------------
@@ -134,12 +135,19 @@ pages :: [(Identifier, String)] -> [Item String]
 pages [] = []
 pages ((a,b):xs) = (Item a b):(pages xs)
 
-sidebarCtx :: Context String
-sidebarCtx =
+sidebarCtx :: Context String -> Context String
+sidebarCtx nodeCtx =
+    evalCtx `mappend`
     listField "list_pages" nodeCtx (return $ pages pair) `mappend`
     defaultContext
 
-nodeCtx :: Context String
-nodeCtx =
+baseNodeCtx :: Context String
+baseNodeCtx =
     urlField "node-url" `mappend`
-    titleField "title"
+    titleField "title" `mappend`
+    evalCtx
+
+evalMetadata :: [String] -> Item a -> Compiler String
+evalMetadata [key] identifier = getMetadataField' (itemIdentifier identifier) key
+
+evalCtx = functionField "eval" evalMetadata
