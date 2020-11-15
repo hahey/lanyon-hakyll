@@ -11,24 +11,18 @@
   <nav class="sidebar-nav">
     <a class="sidebar-nav-item$if(home)$ active$endif$" href="/">Home</a>
 
-    <!--- The code below dynamically generates a sidebar nav of pages with -->
-    <!--- `layout: page` in the front-matter. See readme for usage. -->
+    <!--- The code below dynamically generates a sidebar nav of the files in the folder /pages -->
 
     $for(list_pages)$
       $if(title)$
-          <a class="sidebar-nav-item$if(page-name)$ active$endif$" href="$node-url$">$title$</a>
+        <a class="sidebar-nav-item$if(eval(title))$ active$endif$" href="$node-url$">$title$</a>
       $endif$
     $endfor$
 
     <a class="sidebar-nav-item$if(archive)$ active$endif$" href="/archive.html">Archives</a>
 
-    <!---
-    <a class="sidebar-nav-item" href="{{ site.github.repo }}/archive/v{{ site.version }}.zip">Download</a>
-    -->
     <a class="sidebar-nav-item" href="$github-repo$">GitHub project</a>
-    <!---
-    <span class="sidebar-nav-item">Currently v{{ site.version }}</span>
-    -->
+
   </nav>
 
   <div class="sidebar-item">
@@ -49,7 +43,7 @@
         based on
         <a href="https://lanyon.getpoole.com/">
             Lanyon
-        </a>
+        </a>.
     </p>
   </div>
 </div>
