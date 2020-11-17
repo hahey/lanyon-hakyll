@@ -9,17 +9,17 @@
   </div>
 
   <nav class="sidebar-nav">
-    <a class="sidebar-nav-item$if(home)$ active$endif$" href="/">Home</a>
+    <a class="sidebar-nav-item$if(home)$ active$endif$" href="$baseurl$">Home</a>
 
     <!--- The code below dynamically generates a sidebar nav of the files in the folder /pages -->
 
     $for(list_pages)$
       $if(title)$
-        <a class="sidebar-nav-item$if(eval(title))$ active$endif$" href="$node-url$">$title$</a>
+        <a class="sidebar-nav-item$if(eval(title))$ active$endif$" href="$baseurl$$node-url$">$title$</a>
       $endif$
     $endfor$
 
-    <a class="sidebar-nav-item$if(archive)$ active$endif$" href="/archive.html">Archives</a>
+    <a class="sidebar-nav-item$if(archive)$ active$endif$" href="$baseurl$/archive.html">Archive</a>
 
     <a class="sidebar-nav-item" href="$github-repo$">GitHub project</a>
 
@@ -30,20 +30,14 @@
       &copy; $copy-year$. All rights reserved.
     </p>
     <p>
-        <img src="/images/haskell-logo.png" class=logo style="display: inline;"/>
+        <img src="$baseurl$/images/haskell-logo.png" class=logo style="display: inline;"/>
         Site created with
-        <a href="https://jaspervdj.be/hakyll">
-            Hakyll
-        </a>.
+        <a href="https://jaspervdj.be/hakyll">Hakyll</a>.
         <br>
         Modified theme
-        <a href="https://github.com/hahey/lanyon-hakyll#readme">
-            lanyon-hakyll
-        </a>
+        <a href="https://github.com/hahey/lanyon-hakyll">lanyon-hakyll</a>
         based on
-        <a href="https://lanyon.getpoole.com/">
-            Lanyon
-        </a>.
+        <a href="https://lanyon.getpoole.com/">Lanyon</a>.
     </p>
   </div>
 </div>
