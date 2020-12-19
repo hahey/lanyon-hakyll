@@ -66,8 +66,8 @@ main = hakyll $ do
             posts <- recentFirst =<< loadAllSnapshots ("posts/*" .&&. hasNoVersion) "content"
             let archiveCtx =
                     listField "posts" postCtx (return posts) `mappend`
-                    constField "title" "Archives"            `mappend`
-                    constField "archive" "" `mappend`
+                    constField "title" "Archive"             `mappend`
+                    constField "archive" ""                  `mappend`
                     siteCtx
 
             makeItem ""
