@@ -3,11 +3,13 @@
 This theme is a port of [Lanyon theme](https://github.com/poole/lanyon) originated by Mark Otto (mdo)
 for Haskell-based static site generator [Hakyll](https://jaspervdj.be/hakyll/) originally written by Jasper Van der Jeugt.
 
-The pagination code is a modified version of [the code by Mike Limansky](https://github.com/limansky/limansky_me/blob/master/src/site.hs).
+Few Remarks:
 
-The dynamic sidebar activation is explained in my [blog post](https://heuna-kim.net/posts/2020-11-19-Hakyll-Sidebar-Activation.html).
-
-The current version does not support tags, related posts, and syntax highlight but it will be updated soon.
+- The code for displaying related post is a modified version based on [the blog post by Matthew Fitzsimmons](https://www.fitzsimmons.io/posts/tricks-with-tags-in-hakyll).
+The original version of Lanyon displays only related posts not tags and the port is following the same.
+- The pagination code is a modified version of [the code by Mike Limansky](https://github.com/limansky/limansky_me/blob/master/src/site.hs).
+- The dynamic sidebar activation is explained in my [blog post](https://heuna-kim.net/posts/2020-11-19-Hakyll-Sidebar-Activation.html).
+- Syntax highlighting is slightly different from the original Lanyon; this repository is using the standard syntax highlighting for Hakyll conforming with `Pandoc` compiler.
 
 ### Previews
 
