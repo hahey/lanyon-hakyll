@@ -1,10 +1,11 @@
 --------------------------------------------------------------------------------
 {-# LANGUAGE OverloadedStrings #-}
-import           Data.Monoid (mappend)
+import           Data.Monoid                   (mappend)
+import           Data.List                     (sortBy)
+import           Data.Ord                      (comparing)
 import           Hakyll
-import           Control.Monad (liftM)
+import           Control.Monad                 (liftM, forM_)
 import           System.FilePath               (takeBaseName)
-
 
 --------------------------------------------------------------------------------
 main :: IO ()
@@ -39,18 +40,30 @@ main = hakyll $ do
                 >>= loadAndApplyTemplate "templates/default.html" (activeSidebarCtx <> siteCtx)
                 >>= relativizeUrls
 
+    tags <- buildTags "posts/*" (fromCapture "tags/*.html")
+
+    match "posts/*" $ version "meta" $ do
+        route   $ setExtension "html"
+        compile getResourceBody
+
     match "posts/*" $ do
         route $ setExtension "html"
-        compile $ pandocCompiler
-            >>= saveSnapshot "content"
-            >>= loadAndApplyTemplate "templates/post.html"    postCtx
-            >>= loadAndApplyTemplate "templates/default.html" (baseSidebarCtx <> siteCtx)
-            >>= relativizeUrls
+        compile $ do
+            posts <- loadAll ("posts/*" .&&. hasVersion "meta")
+            let taggedPostCtx = (tagsField "tags" tags) `mappend`
+                                postCtx `mappend`
+                                (relatedPostsCtx posts 3)
+
+            pandocCompiler
+                >>= saveSnapshot "content"
+                >>= loadAndApplyTemplate "templates/post.html" taggedPostCtx
+                >>= loadAndApplyTemplate "templates/default.html" (baseSidebarCtx <> siteCtx)
+                >>= relativizeUrls
 
     create ["archive.html"] $ do
         route idRoute
         compile $ do
-            posts <- recentFirst =<< loadAll "posts/*"
+            posts <- recentFirst =<< loadAllSnapshots ("posts/*" .&&. hasNoVersion) "content"
             let archiveCtx =
                     listField "posts" postCtx (return posts) `mappend`
                     constField "title" "Archives"            `mappend`
@@ -67,7 +80,7 @@ main = hakyll $ do
     paginateRules paginate $ \page pattern -> do
         route idRoute
         compile $ do
-            posts <- recentFirst =<< loadAllSnapshots pattern "content"
+            posts <- recentFirst =<< loadAllSnapshots (pattern .&&. hasNoVersion) "content"
             let indexCtx =
                     constField "title" (if page == 1 then "Home"
                                                      else "Blog posts, page " ++ show page) `mappend`
@@ -89,7 +102,7 @@ main = hakyll $ do
         compile $ do
             let feedCtx = postCtx `mappend`
                     bodyField "description"
-            posts <- fmap (take 10) . recentFirst =<< loadAllSnapshots "posts/*" "content"
+            posts <- fmap (take 10) . recentFirst =<< loadAllSnapshots ("posts/*" .&&. hasNoVersion) "content"
             renderAtom feedConfig feedCtx posts
 
 --------------------------------------------------------------------------------
@@ -113,11 +126,6 @@ feedConfig = FeedConfiguration
 
 --------------------------------------------------------------------------------
 
-postCtx :: Context String
-postCtx =
-    dateField "date" "%B %e, %Y" `mappend`
-    defaultContext
-
 siteCtx :: Context String
 siteCtx =
     baseCtx `mappend`
@@ -134,9 +142,41 @@ baseCtx =
 
 --------------------------------------------------------------------------------
 
+postCtx :: Context String
+postCtx =
+    dateField "date" "%B %e, %Y" `mappend`
+    defaultContext
+
+tagsRulesVersioned tags rules =
+    forM_ (tagsMap tags) $ \(tag, identifiers) ->
+        rulesExtraDependencies [tagsDependency tags] $
+            create [tagsMakeId tags tag] $
+                rules tag identifiers
+
+relatedPostsCtx
+  :: [Item String]  -> Int  -> Context String
+relatedPostsCtx posts n = listFieldWith "related_posts" postCtx selectPosts
+  where
+    rateItem ts i = length . filter (`elem` ts) <$> (getTags $ itemIdentifier i)
+    selectPosts s = do
+      postTags <- getTags $ itemIdentifier s
+      let trimmedItems = filter (not . matchPath s) posts
+      take n . reverse <$> sortOnM (rateItem postTags) trimmedItems
+
+matchPath :: Item String -> Item String -> Bool
+matchPath x y = eqOn (toFilePath . itemIdentifier) x y
+
+eqOn :: Eq b => (a -> b) -> a -> a -> Bool
+eqOn f x y = f x == f y
+
+sortOnM :: (Monad m, Ord b) => (a -> m b) -> [a] -> m [a]
+sortOnM f xs = map fst . sortBy (comparing snd) . zip xs <$> mapM f xs
+
+--------------------------------------------------------------------------------
+
 sidebarCtx :: Context String -> Context String
 sidebarCtx nodeCtx =
-    listField "list_pages" nodeCtx (loadAllSnapshots "pages/*" "page-content") `mappend`
+    listField "list_pages" nodeCtx (loadAllSnapshots ("pages/*" .&&. hasNoVersion) "page-content") `mappend`
     defaultContext
 
 baseNodeCtx :: Context String
